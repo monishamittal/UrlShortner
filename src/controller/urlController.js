@@ -1,6 +1,6 @@
 const validUrl = require('valid-url')
 const shortid = require('shortid')
-const urlModel = require("../Model/urlModel")
+const urlModel = require("../models/urlModel")
 
 //===========================================Validation=========================================//
 

@@ -103,10 +103,10 @@ const getUrl = async function(req, res){
     try{
     const url = await urlModel.findOne({ urlCode: req.params.urlCode});
       if (url) {
-          console.log("Long url found for short url. Redirecting...");
+          console.log("Redirecting to original url.....");
           return res.redirect(url.longUrl);
     } else {
-          return res.status(404).json({ message: "No url found" });
+          return res.status(404).send({ message: "No url found" });
         }
     }
     catch (err) {

@@ -1,0 +1,34 @@
+{
+  "name": "nodeprojects",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MrMohit08/nodeProjects.git"
+  },
+  "keywords": [
+    "url shorten",
+    "nodejs",
+    "express",
+    "nodemon",
+    "url"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MrMohit08/nodeProjects/issues"
+  },
+  "homepage": "https://github.com/MrMohit08/nodeProjects#readme",
+  "dependencies": {
+    "config": "^3.3.7",
+    "express": "^4.18.1",
+    "mongoose": "^6.4.4",
+    "nodemon": "^2.0.19",
+    "shortid": "^2.2.16",
+    "valid-url": "^1.0.9"
+  }
+}

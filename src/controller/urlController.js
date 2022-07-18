@@ -1,33 +1,42 @@
 const urlModel = require("../models/urlModel")
-const validator = require("../validator/validator")
-//const urid = require("urid")
-//const { v4: uuidv4 } = require('uuid');
+const { isValidUrl } = require("../validator/validator")
 const shortid = require("shortid")
-
-const baseUrl = 'http://localhost:3000/'
+var validUrl = require('valid-url');
 
 const createUrl = async function (req, res) {
- try {
-    const {longUrl} = req.body
-    const data = req.body
-    const id = shortid.generate()
-    console.log(id)
-    const shortUrl = baseUrl + id
-    console.log(shortUrl)
-    res.send({shortUrl})
 
-    const dbUrl = await urlModel.create(data)
-    return res.status(201).send({status: true, msg: "successfully created", data: dbUrl})
+   const { longUrl } = req.body;
+   const base = 'http://localhost:3000';
 
+   const urlCode = shortid.generate();
+   if ((validUrl.isUri(longUrl))) {
+      try {
+         let url = await urlModel.findOne({ longUrl });
+         if (url) {
+            res.json(url);
+         } else {
+            const shortUrl = `${base}/${urlCode}`;
+            url = new urlModel({
+               longUrl,
+               shortUrl,
+               urlCode
 
+            });
+            console.log(url)
 
- }
-
- catch (err) {
-        return res.status(500).send({status: false, message : err.message})
-
- }
-}
+            await url.save();
+           
+            res.json(url);
+         }
+      }
+      catch (err) {
+         console.log(err);
+         res.status(500).json('Server Error');
+      }
+   } else {
+      res.status(400).json('Invalid Original Url');
+   }
+};
 
 
 module.exports.createUrl = createUrl

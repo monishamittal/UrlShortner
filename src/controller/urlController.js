@@ -23,6 +23,10 @@ const createUrl = async function(req, res) {
         status: false, message: "Invalid URL Please Enter valid details"})
     }
     //check longUrl is present or not
+    if(!isValid.longUrl){
+        return res.status(400).send({
+            status: false, message: "Only links"})
+    }
     if(!data.longUrl){
      return res.status(400).send({
        status: false, message: "longUrl is required"})

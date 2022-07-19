@@ -65,7 +65,7 @@ const createUrl = async function (req, res) {
             
             if (!newUrl) {
                return res.status(400).send({
-                  status: false, message: " No data found due to invalid request"
+                  status: false, message: " No data created due to invalid request"
                })
             }
 

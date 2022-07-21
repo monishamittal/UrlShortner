@@ -56,51 +56,52 @@ const createUrl = async function (req, res) {
 
 
       // check long url is valid or not 
-      if (!validUrl.isUri(data.longUrl)){return res.status(400).send({status:false,message:"invalid url"})}
-      
-         longUrl = data.longUrl
-         let cachedData = await GET_ASYNC(`${longUrl}`)
-         
-         if (cachedData) {
-            res.status(302).send(cachedData)
-         }
-         else {
- 
-            let lurl=await urlModel.findOne({longUrl})
-            if(lurl){return res.status(200).send({status:true, message:"already exist",data:lurl})}
+      if (!validUrl.isUri(data.longUrl)) { return res.status(400).send({ status: false, message: "invalid url" }) }
 
-            // generating the url code
-            let urlCode = shortid.generate().toLowerCase(); 
-            let checkedUrlCode = await urlModel.findOne({ urlCode: urlCode })
-            if (checkedUrlCode) {
-               return res.status(400).send({ status: false, message: "ShortUrl is not unique" })
-            }
+      longUrl = data.longUrl
+      let cachedData = await GET_ASYNC(`${longUrl}`)
 
-            // creating the short url 
-            let shortUrl = baseUrl + urlCode; 
-
-            data.urlCode = urlCode
-            data.shortUrl = shortUrl
-
-            //creating a document in database
-            let newUrl = await urlModel.create(data)
-            let urlData = await urlModel.find({ longUrl });
-            console.log(urlData)
-            await SET_ASYNC(`${longUrl}`, JSON.stringify(urlData))
-
-            let finalUrl = { ...newUrl.toObject() }
-            delete finalUrl._id
-            delete finalUrl.__v
-            delete finalUrl.createdAt
-            delete finalUrl.updatedAt
-
-            res.status(201).send({
-               status: true, message: "Data created successfully", data: finalUrl
-            })
-         }
+      if (cachedData) {
+         res.status(200).send(cachedData)
       }
+      else {
 
-    catch (err) {
+         let lurl = await urlModel.findOne({ longUrl })
+         if (lurl) { return res.status(200).send({ status: true, message: "already exist", data: lurl }) }
+
+         // generating the url code
+         let urlCode = shortid.generate().toLowerCase();
+         let checkedUrlCode = await urlModel.findOne({ urlCode: urlCode })
+         if (checkedUrlCode) {
+            return res.status(400).send({ status: false, message: "ShortUrl is not unique" })
+         }
+
+         // creating the short url 
+         let shortUrl = baseUrl + urlCode;
+
+         data.urlCode = urlCode
+         data.shortUrl = shortUrl
+
+         //creating a document in database
+         let newUrl = await urlModel.create(data)
+
+        
+         let finalUrl = { ...newUrl.toObject() }
+         delete finalUrl._id
+         delete finalUrl.__v
+         delete finalUrl.createdAt
+         delete finalUrl.updatedAt
+
+         await SET_ASYNC(`${longUrl}`, JSON.stringify(finalUrl))
+
+
+         res.status(201).send({
+            status: true, message: "Data created successfully", data: finalUrl
+         })
+      }
+   }
+
+   catch (err) {
       return res.status(500).send({
          status: false, error: err.message
       });
@@ -121,23 +122,24 @@ const getUrl = async function (req, res) {
       }
       else {
          const url = await urlModel.findOne({ urlCode: req.params.urlCode })
-      if (url) {
-      await SET_ASYNC(`${req.params.urlCode}`,url.longUrl)
+         if (url) {
+            await SET_ASYNC(`${req.params.urlCode}`, url.longUrl)
             return res.redirect(url.longUrl);
          } else {
-            return res.status(404).send({ status:false, message: "No url found" });
+            return res.status(404).send({ status: false, message: "No url found" });
          }
-      }}
-   catch (err) {
-         console.error(err);
-         return res.status(500).send({
-            status: false, message: "Some error has occurred"
-         });
       }
    }
+   catch (err) {
+      console.error(err);
+      return res.status(500).send({
+         status: false, message: "Some error has occurred"
+      });
+   }
+}
 
 
 
 
 module.exports.createUrl = createUrl
-   module.exports.getUrl = getUrl
+module.exports.getUrl = getUrl

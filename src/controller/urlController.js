@@ -3,6 +3,7 @@ const shortid = require('shortid')
 const urlModel = require("../models/urlModel")
 const redis = require("redis");
 const { promisify } = require("util");
+const { findOne } = require('../models/urlModel');
 
 
 //===========================================Validation=========================================//
@@ -64,6 +65,10 @@ const createUrl = async function (req, res) {
             res.status(302).send(cachedData)
          }
          else {
+ 
+            let lurl=await urlModel.findOne({longUrl})
+            if(lurl){return res.status(200).send({status:true, message:"already exist",data:lurl})}
+
             // generating the url code
             let urlCode = shortid.generate().toLowerCase(); 
             let checkedUrlCode = await urlModel.findOne({ urlCode: urlCode })
@@ -130,18 +135,6 @@ const getUrl = async function (req, res) {
          });
       }
    }
-
-// const fetchShortUrl = async function (req, res) {
-//    let cachedData = await GET_ASYNC(`${req.params.urlCode}`)
-//    if(cachedData) {
-//      res.send(cachedData)
-//    } else {
-//      let profile = await urlModel.find(req.params.urlCode);
-//      await SET_ASYNC(`${req.params.urlCode}`, JSON.stringify(urlCode))
-//      res.send({ data: urlCode });
-//    }
-
-//  };
 
 
 
